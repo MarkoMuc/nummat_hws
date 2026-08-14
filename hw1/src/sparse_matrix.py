@@ -93,7 +93,7 @@ class RedkaMatrika:
 
         x = np.asarray(vector, dtype=float)
         n, _ = self.shape
-        if x.ndim != 1:
+        if x.ndim != 1 or len(x) != n:
             raise ValueError("The vector must be of dimension 1")
         # NxN dot N=> N vector
         result = np.zeros(n, dtype=float)
@@ -103,3 +103,45 @@ class RedkaMatrika:
             # This is (Ax)_i = Sum_j V_i[j] x_(I[i,j])
             result[row] = np.dot(values, x[columns])
         return result
+
+    # Most of these methods are just for testing the implementation
+
+    @property
+    def nnz(self) -> int:
+        """Returns the number of nonzero elements in the matrix"""
+
+        return sum(map(len, self.V))
+
+    @classmethod
+    def zeros(cls, n: int) -> RedkaMatrika:
+        """Make sparse matrix of all zeros."""
+        # This also keeps shape [n,n]
+        return cls([[] for _ in range(n)], [[] for _ in range(n)])
+
+
+    @classmethod
+    def from_dense(cls, matrix):
+        """ From matrix A to the sparse representation with a static method"""
+
+        dense = np.asarray(matrix)
+        if dense.ndim != 2 or dense.shape[0] != dense.shape[1]:
+            raise ValueError("Must be square matrix.")
+
+        values= []
+        indices = []
+        for row in dense:
+            # Returns indices where row is zero
+            columns = np.flatnonzero(row)
+            indices.append(columns.tolist())
+            values.append(row[columns].astype(float).tolist())
+        return cls(values, indices)
+
+
+    def to_dense(self):
+        """ Returns a dense deep copy of the matrix (so returns back matrix A)"""
+
+        n, _ = self.shape
+        dense = np.zeros((n, n), dtype=float)
+        for row, (values, columns) in enumerate(zip(self.V, self.I, strict=True)):
+            dense[row, columns] = values
+        return dense

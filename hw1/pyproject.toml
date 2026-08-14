@@ -1,0 +1,20 @@
+[project]
+name = "hw1"
+version = "0.1.0"
+requires-python = ">=3.14"
+dependencies = [
+    "numpy>=2.3",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4",
+]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+addopts = "-ra --strict-markers"
+pythonpath = ["src"]
+testpaths = ["tests"]
