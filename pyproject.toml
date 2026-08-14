@@ -17,6 +17,6 @@ package = false
 members = ["hw1"]
 
 [tool.pytest.ini_options]
-addopts = "-ra --strict-markers"
+addopts = "-ra --strict-markers --import-mode=importlib"
 pythonpath = ["hw1/src"]
 testpaths = ["hw1/tests"]

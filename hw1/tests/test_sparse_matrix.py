@@ -4,7 +4,7 @@ import pytest
 from sparse_matrix import RedkaMatrika
 
 
-def test_storage_indexing_and_shape() -> None:
+def test_storage_indexing_and_shape():
     dense = np.array([[4.0, 0.0, -1.0], [0.0, 2.0, 0.0], [-1.0, 0.0, 3.0]])
     matrix = RedkaMatrika.from_dense(dense)
 
@@ -17,7 +17,7 @@ def test_storage_indexing_and_shape() -> None:
     np.testing.assert_array_equal(matrix.to_dense(), dense)
 
 
-def test_setting_inserts_updates_and_removes_entry() -> None:
+def test_setting_inserts_updates_and_removes_entry():
     matrix = RedkaMatrika.zeros(3)
 
     matrix[1, 2] = 5
@@ -32,7 +32,7 @@ def test_setting_inserts_updates_and_removes_entry() -> None:
     assert matrix.nnz == 1
 
 
-def test_sparse_matrix_vector_product_matches_hand_calculation() -> None:
+def test_sparse_matrix_vector_product_matches_hand_calculation():
     matrix = RedkaMatrika(
         [[4, -1], [-1, 4, -1], [-1, 3]],
         [[0, 1], [0, 1, 2], [1, 2]],
@@ -41,7 +41,7 @@ def test_sparse_matrix_vector_product_matches_hand_calculation() -> None:
     np.testing.assert_allclose(matrix @ np.array([1.0, 2.0, 3.0]), [2.0, 4.0, 7.0])
 
 
-def test_invalid_sparse_matrix_operations_are_rejected() -> None:
+def test_invalid_sparse_matrix_operations_are_rejected():
     with pytest.raises(ValueError):
         RedkaMatrika([[1]], [[], []])
     with pytest.raises(ValueError):
