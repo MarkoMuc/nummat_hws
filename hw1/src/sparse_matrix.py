@@ -1,6 +1,7 @@
+from bisect import bisect_left
+
 import numpy as np
 
-from bisect import bisect_left
 
 class RedkaMatrika:
     """ Sparce matrix data type
@@ -14,7 +15,7 @@ class RedkaMatrika:
     def __init__(self, V, I):
         self.V = []
         self.I = []
-        n = len(V) # Square matrices
+        n = len(V)  # Square matrices
 
         # Validate the V and I array. By saying strict=True zip will also make sure the length match
         for row_values, row_indices in zip(V, I, strict=True):
@@ -25,7 +26,7 @@ class RedkaMatrika:
                     raise IndexError("Invalid row matrix")
                 if column in entries:
                     raise ValueError("Same nonzero element saved twice")
-                if value != 0: # In case a rouge zero element is in V, we can fix this easily
+                if value != 0:  # In case a rouge zero element is in V, we can fix this easily
                     entries[column] = float(value)
 
             # Sort by index
@@ -34,7 +35,6 @@ class RedkaMatrika:
             # Values are also sorted by their position (index)
             self.V.append([entries[column] for column in columns])
 
-
     @property
     def shape(self):
         """Returns the size of the matrix"""
@@ -42,12 +42,10 @@ class RedkaMatrika:
         n = len(self.V)
         return n, n
 
-
     def _check_position(self, row, column):
         n, _ = self.shape
         if not (0 <= row < n and 0 <= column < n):
             raise IndexError("Index is out of bounds")
-
 
     def __getitem__(self, position):
         """Returns an element: value = A[i,j]"""
@@ -61,8 +59,7 @@ class RedkaMatrika:
         # Validate the index
         if offset < len(self.I[row]) and self.I[row][offset] == column:
             return self.V[row][offset]
-        return 0.0 # We are returning a zero value from the matrix
-
+        return 0.0  # We are returning a zero value from the matrix
 
     def __setitem__(self, position, value):
         """Stores an element: A[i,j] = value"""
@@ -118,7 +115,6 @@ class RedkaMatrika:
         # This also keeps shape [n,n]
         return cls([[] for _ in range(n)], [[] for _ in range(n)])
 
-
     @classmethod
     def from_dense(cls, matrix):
         """ From matrix A to the sparse representation with a static method"""
@@ -127,7 +123,7 @@ class RedkaMatrika:
         if dense.ndim != 2 or dense.shape[0] != dense.shape[1]:
             raise ValueError("Must be square matrix.")
 
-        values= []
+        values = []
         indices = []
         for row in dense:
             # Returns indices where row is zero
@@ -135,7 +131,6 @@ class RedkaMatrika:
             indices.append(columns.tolist())
             values.append(row[columns].astype(float).tolist())
         return cls(values, indices)
-
 
     def to_dense(self):
         """ Returns a dense deep copy of the matrix (so returns back matrix A)"""

@@ -2,14 +2,15 @@ import numpy as np
 
 from sparse_matrix import RedkaMatrika
 
+
 # Pretty much the implementation from Vaje06
 def conj_grad(
-    A: RedkaMatrika,
-    b,
-    *,
-    tol = 1e-10,
-    max_iter = None,
-    x0 = None,
+        A: RedkaMatrika,
+        b,
+        *,
+        tol=1e-10,
+        max_iter=None,
+        x0=None,
 ):
     """Solve the linear system A @ x = b with the conjugate gradient method
 
@@ -45,21 +46,21 @@ def conj_grad(
         if not np.isfinite(x).all():
             raise ValueError("Finite numbers only")
 
-    residual = right_side - A @ x # Measures how much current approx. satisfies the system
-    direction = residual.copy() # Move in direction opposite the gradient
-    residual_norm_squared = float(residual @ residual) # Dot product in numpy
+    residual = right_side - A @ x  # Measures how much current approx. satisfies the system
+    direction = residual.copy()  # Move in direction opposite the gradient
+    residual_norm_squared = float(residual @ residual)  # Dot product in numpy
     if np.sqrt(residual_norm_squared) < tol:
         return x, 0
 
-    for iteration in range(1, max_iter + 1): # From 1 since the first iteration was already done
+    for iteration in range(1, max_iter + 1):  # From 1 since the first iteration was already done
         matrix_direction = A @ direction
         curvature = float(direction @ matrix_direction)
         if curvature <= 0 or not np.isfinite(curvature):
-            raise ValueError( "Matrix is not P.D." )
+            raise ValueError("Matrix is not P.D.")
 
-        alpha = residual_norm_squared / curvature # Alpha represents the step size
-        x += alpha * direction # Updating the approximation
-        residual -= alpha * matrix_direction # Negative gradient, we want to descent
+        alpha = residual_norm_squared / curvature  # Alpha represents the step size
+        x += alpha * direction  # Updating the approximation
+        residual -= alpha * matrix_direction  # Negative gradient, we want to descent
         new_residual_norm_squared = float(residual @ residual)
 
         if np.sqrt(new_residual_norm_squared) < tol:
