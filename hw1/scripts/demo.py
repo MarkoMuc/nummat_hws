@@ -67,7 +67,7 @@ if __name__ == "__main__":
             float(np.linalg.norm(matrix @ embedded[dimension, n:] - rhs))
         )
 
-    image_directory = Path("img")
+    image_directory = Path("./img")
     image_directory.mkdir(exist_ok=True)
 
     figure, axes = plt.subplots(1, 2, figsize=(9.0, 4.2), constrained_layout=True)
