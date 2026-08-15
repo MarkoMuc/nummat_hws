@@ -1,12 +1,11 @@
 import numpy as np
-from numpy.typing import ArrayLike, NDArray
 
 from sparse_matrix import RedkaMatrika
 
 # Pretty much the implementation from Vaje06
 def conj_grad(
     A: RedkaMatrika,
-    b: ArrayLike,
+    b,
     *,
     tol = 1e-10,
     max_iter = None,

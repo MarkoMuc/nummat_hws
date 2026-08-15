@@ -107,13 +107,13 @@ class RedkaMatrika:
     # Most of these methods are just for testing the implementation
 
     @property
-    def nnz(self) -> int:
+    def nnz(self):
         """Returns the number of nonzero elements in the matrix"""
 
         return sum(map(len, self.V))
 
     @classmethod
-    def zeros(cls, n: int) -> RedkaMatrika:
+    def zeros(cls, n) -> RedkaMatrika:
         """Make sparse matrix of all zeros."""
         # This also keeps shape [n,n]
         return cls([[] for _ in range(n)], [[] for _ in range(n)])
