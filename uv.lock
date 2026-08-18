@@ -5,6 +5,7 @@ requires-python = ">=3.14"
 [manifest]
 members = [
     "hw1",
+    "hw2",
     "nummat-hws",
 ]
 
@@ -88,6 +89,29 @@ wheels = [
 name = "hw1"
 version = "0.1.0"
 source = { virtual = "hw1" }
+dependencies = [
+    { name = "matplotlib" },
+    { name = "numpy" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "pytest" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "matplotlib", specifier = ">=3.11.1" },
+    { name = "numpy", specifier = ">=2.3" },
+]
+
+[package.metadata.requires-dev]
+dev = [{ name = "pytest", specifier = ">=8.4" }]
+
+[[package]]
+name = "hw2"
+version = "0.1.0"
+source = { virtual = "hw2" }
 dependencies = [
     { name = "matplotlib" },
     { name = "numpy" },
