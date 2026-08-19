@@ -11,6 +11,7 @@ def chebyshev_nodes(n, a=-1.0, b=1.0):
     k = np.arange(n + 1, dtype=float)  # Indices
     cnodes = np.cos(np.pi * k / n)
 
+    # This is as described in the notes, but I think its a mistake
     # k = np.arange(n, dtype=float) # Indices
     # cnodes = np.cos((2.0 * k - 1.0) * np.pi / (2.0 * n)) # Chebyshev nodes generated with the formula
 
@@ -26,6 +27,7 @@ def chebyshev_weights(n):
     weights[1::2] = -1.0
     weights[[0, -1]] *= 0.5
 
+    # This is as described in the notes, but I think its a mistake
     # indices = np.arange(n, dtype=int)  # k = 0, 1, ..., n - 1
     # factors = np.where(
     #    (0 < indices) & (indices < n),
