@@ -4,11 +4,6 @@ from typing import Callable
 
 # A lot of the implementations here are similar or identical to @Vaje13 for chapter 13 of the book
 
-def sinc(x):
-    if x == 0.0:
-        return 1.0
-
-    return sin(x) / x
 
 @dataclass(frozen=True)
 class Interval:
@@ -54,7 +49,7 @@ class StepDoublingResult:
     value: float #Q_2n
     richardson_value: float # I_n = Q_2n + (Q_2n - Q_n)/15
     error_estimate: float # |(Q_2n - q_n) / 15|
-    panels: int
+    N: int
     evaluations: int # Final cost of the quadrature
     total_evaluations: int # All earlier trials
 
@@ -119,7 +114,7 @@ def estimate_by_step_doubling(
                 value=fine,
                 richardson_value=fine + difference / 15.0,
                 error_estimate=error_estimate,
-                panels=curr_N,
+                N=curr_N,
                 evaluations=2 * curr_N,
                 total_evaluations=total_evaluations,
             )
