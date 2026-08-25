@@ -90,11 +90,91 @@ Thus DOPRI5 can adapt its time step.
 
 The Butcher tableau for the DOPRI5 method can be found here #link("https://en.wikipedia.org/wiki/Dormand%E2%80%93Prince_method#Butcher_tableau").
 
-== Evaluating and comparing the mathematical and harmonic pendulum
+= Numerical experiments
 
-The harmonic pendulum formula can be directly sovled using the following stuff:
+The experiments use $ g=9.81 "m/s"^2, quad l=1 "m", quad m=1 "kg"$
+and initial angular velocity $omega_0=0$.
+The harmonic period associated with these parameters is $ T_0=2 pi sqrt(l/g) approx 2.00607 "s". $
 
+First we will compare the mathematical pendulum is approximated with DOPRI5.
+But the harmonic approximation replaces $sin(theta)$ by $theta$:
+$ theta_h'' + g/l theta_h=0. $
 
-To track the period and to interpolate for plotting, we will use the Hermitic interpolation and zero finding as in Vaje 16.
+For $omega_0=0$, the harmonic solution is
+#footnote[#link("https://en.wikipedia.org/wiki/Pendulum_(mechanics)#Small-angle_approximation")]
+$ theta_h(t)=theta_0 cos(sqrt(g/l)t).$
+Plus the previously mentioned harmonic period.
 
+The mathematical pendulum is approximated for three initial angles $theta_0=0.1$, $1.0$, and $2.5$.
+Every solution is computed over three harmonic periods.
 
+DOPRI5 chooses its time steps adaptively, so different solutions do not generally contain values at the same times.
+For plotting, we evaluate them on one common uniform grid.
+Intermediate values are obtained with cubic Hermite interpolation, as in `Vaje 16`
+#footnote[#link("https://gitlab.com/nummat/nummat-knjiga/-/blob/master/Vaja16/src/Vaja16.jl?ref_type=heads")].
+The comparison is plotted on @img1.
+
+#figure(
+  image("img/hw3_pendulum_comparison.svg", width: 88%),
+  caption: [
+    Comparison of the nonlinear mathematical pendulum approximated with DOPRI5 and
+    the harmonic approximation for three initial angles.
+  ],
+)<img1>
+
+For the smallest angle $theta_0=0.1$, the two curves are almost identical.
+This is expected because $sin(theta) approx theta$ near zero.
+
+At $theta_0=1.0$, the difference in the periods becomes visible and gradually produces a shift.
+
+At $theta_0=2.5$, the harmonic approximation is no longer accurate, as it oscillates considerably faster than the nonlinear pendulum.
+For $0<theta<pi$, we have $sin(theta)<theta$,
+so the restoring acceleration in the nonlinear model is weaker than in the harmonic model.
+The nonlinear pendulum consequently needs more time to complete one oscillation.
+
+The second experiment is the comparison between the period of the nonlinear pendulum and the energy of the system.
+Note that the graph is not constructed from all time steps of one trajectory.
+Instead, we repeat the complete simulation for many different initial angles.
+Each initial angle produces one energy and one measured period, thus one point $(E,T)$ in the graph.
+
+The mechanical energy is
+#footnote[#link("https://en.wikipedia.org/wiki/Pendulum_(mechanics)") and #link("https://en.wikipedia.org/wiki/Spherical_pendulum")]
+$ E(t)=1/2 m l^2 omega(t)^2 + m g l(1-cos(theta(t))). $
+
+Because every pendulum is released from rest, $omega_0=0$, its initial energy is simplifies to $ E_0=m g l(1-cos(theta_0)). $
+
+The model contains no damping, so this total energy should remain constant during one simulation.
+Consequently, we calculate one energy value for each initial condition rather than treating the DOPRI5 time points as different energy levels.
+The graph uses the dimensionless quantity $E/(m g l)$.
+
+*Determining the period*
+
+For every initial angle, DOPRI5 first produces a numerical trajectory $(theta(t),omega(t))$.
+We determine its period by detecting zero crossings of $theta(t)$.
+Starting from a positive turning point with $omega_0=0$, the pendulum first crosses $theta=0$ while moving downwards.
+After one complete oscillation it crosses $theta=0$ downwards again.
+The difference between the times of these two crossings is therefore the period: $ T=t_2-t_1. $
+
+The zero search is performed in two short stages.
+First, consecutive stored DOPRI5 states are inspected until the angle changes sign, i.e., we bracket a zero
+The bracket is then narrowed with bisection.
+At each trial time the state is reconstructed from the left endpoint with a DOPRI5 step.
+
+The procedure is repeated for initial angles between $0.05$ and $0.95 pi$.
+For every angle we store $ (E_0,T). $
+
+The plotted graph can be seen on @img2.
+
+#figure(
+  image("img/hw3_period_energy.svg", width: 82%),
+  caption: [
+    Period of the mathematical pendulum as a function of normalized initial energy.
+    The dashed line is the constant harmonic period $T_0$.
+  ],
+)<img2>
+
+At low energy, the mathematical pendulum is close to the harmonic model, so its period is close to $T_0$.
+As the initial energy and thus amplitude increase, the nonlinear period increases.
+The harmonic line stays constant because the harmonic period is independent of amplitude and energy.
+Near $E/(m g l)=2$, the initial angle approaches the unstable upright position $theta_0=pi$.
+The pendulum then spends increasingly more time near the turning point, which explains the steep rise of the curve.
